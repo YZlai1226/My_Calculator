@@ -4,81 +4,85 @@ from tkinter import *
 window = Tk()
 
 cal_input = ""
+clickHistory = ""
 first_num = 0
 second_num = 0
 calculator_method = None
 methodInBracket = None
-openParenthese = False
+newParenthese = False
+
+def calculation(cal_method, number1, number2):
+    if cal_method == '+':
+        number1 = number1 + number2
+    elif cal_method == '-':      
+        number1 = number1 - number2
+    elif cal_method == '*':    
+        number1 = number1 * number2
+    elif cal_method == '/':       
+        number1 = number1 / number2
+    return (number1)
+
 
 def input_key(value):
-    global cal_input
+    global cal_input, clickHistory
     cal_input += value
+    clickHistory += value
     print(cal_input)
-    cal_input_text.set(cal_input)
+    cal_input_text.set(clickHistory)
 
 def operator(method):
-    global cal_input, first_num, calculator_method, second_num, methodInBracket
-    if openParenthese = False:
-        if cal_input == "":
+    global cal_input, first_num, calculator_method, second_num, methodInBracket, clickHistory
+    if newParenthese == False:
+        print('cal input is', cal_input)
+        print("clickHistory is ", clickHistory[-1])
+        if (cal_input == "") and ((clickHistory[-1] == '+') or (clickHistory[-1] == '') or (clickHistory[-1] == '*') or (clickHistory[-1] == '/')):
             calculator_method = method
+            clickHistory = clickHistory[:-1]
+            clickHistory += calculator_method
+            cal_input_text.set(clickHistory)
             return
+        elif cal_input == "":
+            calculator_method = method
+            clickHistory += calculator_method
+            cal_input_text.set(clickHistory)
+            return
+
         if calculator_method == None:
             calculator_method = method
             first_num = float(cal_input)
             cal_input = ""
         else:
-            if calculator_method == '+':
-                first_num = first_num + float(cal_input)
-            elif calculator_method == '-':      
-                first_num = first_num - float(cal_input)
-            elif calculator_method == '*':    
-                first_num = first_num * float(cal_input)
-            elif calculator_method == '/':       
-                first_num = first_num / float(cal_input)
+            first_num = calculation(calculator_method, first_num, float(cal_input))
             calculator_method = method
             cal_input = ""
+        clickHistory += calculator_method
+        cal_input_text.set(clickHistory)
     else:
         if methodInBracket == None:
             methodInBracket = method
             second_num = float(cal_input)
             cal_input = ""
         else:
-            if methodInBracket == '+':  
-                second_num = second_num + float(cal_input)
-            elif methodInBracket == '-':       
-                second_num = second_num - float(cal_input)
-            elif methodInBracket == '*':      
-                second_num = first_second_numum * float(cal_input)
-            elif methodInBracket == '/':      
-                second_num = second_num / float(cal_input)
+            second_num = calculation(methodInBracket, second_num, float(cal_input))
             methodInBracket = method
             cal_input = ""
+        clickHistory += methodInBracket
+        cal_input_text.set(clickHistory)
 
 
 def openParenthese(parenthese):
-    global openParenthese
-    openParenthese = True
+    global newParenthese, clickHistory
+    clickHistory += parenthese
+    cal_input_text.set(clickHistory)
+    newParenthese = True
 
 def closeParenthese(parenthese):
-    global cal_input, first_num, calculator_method, second_num, methodInBracket, openParenthese
-    openParenthese = False
-    if methodInBracket == '+':    
-        second_num = second_num + float(cal_input)
-    elif methodInBracket == '-':    
-        second_num = second_num - float(cal_input)
-    elif methodInBracket == '*':    
-        second_num = second_num * float(cal_input)
-    elif methodInBracket == '/':    
-        second_num = second_num / float(cal_input)
-
-    if calculator_method == '+':
-        first_num = first_num + second_num
-    elif calculator_method == '-':      
-        first_num = first_num - second_num
-    elif calculator_method == '*':    
-        first_num = first_num * second_num
-    elif calculator_method == '/':       
-        first_num = first_num / second_num
+    global cal_input, first_num, calculator_method, second_num, methodInBracket, newParenthese,  clickHistory
+    clickHistory += parenthese
+    cal_input_text.set(clickHistory)
+    newParenthese = False
+    second_num = calculation(methodInBracket, second_num, float(cal_input))
+    first_num = calculation(calculator_method, first_num, second_num)
 
     second_num = 0
     cal_input = ""
@@ -87,8 +91,8 @@ def closeParenthese(parenthese):
 
 
 def equal():
-    global cal_input, first_num, calculator_method
-    if cal_input == "":
+    global cal_input, first_num, calculator_method, second_num, methodInBracket, clickHistory
+    if cal_input != "":
         if calculator_method == '+':    
             result = first_num + float(cal_input)
         elif calculator_method == '-':    
@@ -104,14 +108,16 @@ def equal():
         result = int(result)
     print(result)
     cal_input = ""
-    cal_input_text.set(cal_input)
+    clickHistory = ""
+    cal_input_text.set(clickHistory)
     result_text.set(result)
 
 
 def clear():
-    global cal_input
+    global cal_input, clickHistory, first_num, calculator_method
     cal_input = ""
-    cal_input_text.set(cal_input)
+    clickHistory = ""
+    cal_input_text.set(clickHistory)
     result_text.set("")
     first_num = 0
     calculator_method = None
@@ -133,8 +139,8 @@ Button(window, text=" 7 ", command=lambda: input_key("7")).grid(row=3, column=0)
 Button(window, text=" 8 ", command=lambda: input_key("8")).grid(row=3, column=1)
 Button(window, text=" 9 ", command=lambda: input_key("9")).grid(row=3, column=2)
 Button(window, text=" . ", command=lambda: input_key(".")).grid(row=7, column=0)
-Button(window, text=" ( ", command=lambda: input_key("(")).grid(row=7, column=1)
-Button(window, text=" ) ", command=lambda: input_key(")")).grid(row=7, column=2)
+Button(window, text=" ( ", command=lambda: openParenthese("(")).grid(row=7, column=1)
+Button(window, text=" ) ", command=lambda: closeParenthese(")")).grid(row=7, column=2)
 Button(window, text=" + ", command=lambda: operator("+")).grid(row=3, column=3)
 Button(window, text=" - ", command=lambda: operator("-")).grid(row=4, column=3)
 Button(window, text=" * ", command=lambda: operator("*")).grid(row=5, column=3)
