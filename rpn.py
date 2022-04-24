@@ -217,7 +217,7 @@ def main() -> None:
     tk.Button(window, text=" 9 ", width='5', height='1', command=lambda:
               my_calc.input_key("9")).grid(row=3, column=2)
     tk.Button(window, text=" . ", width='5', height='1', command=lambda:
-              my_calc.input_key(".")).grid(row=7, column=0)
+              my_calc.input_key(".")).grid(row=6, column=1)
     tk.Button(window, text=" ( ", width='5', height='1', command=lambda:
               my_calc.input_key("(")).grid(row=7, column=1)
     tk.Button(window, text=" ) ", width='5', height='1', command=lambda:
@@ -233,13 +233,13 @@ def main() -> None:
     tk.Button(window, text=" ^ ", width='5', height='1', command=lambda:
               my_calc.input_key("^")).grid(row=7, column=3)
     tk.Button(window, text=" del ", width='5', height='1', command=lambda:
-              my_calc.delete_char()).grid(row=7, column=3)
+              my_calc.delete_char()).grid(row=7, column=0)
     tk.Button(window, text=" = ", width='5', height='1', command=lambda:
               my_calc.conversion_and_evaluation(my_calc.click_history,
                                                 my_calc.my_postfix_list)) \
         .grid(row=6, column=2)
     tk.Button(window, text=" C ", width='5', height='1', command=lambda:
-              my_calc.clear()).grid(row=6, column=1)
+              my_calc.clear()).grid(row=0, column=0)
     window.title("myCalculator")
     window.resizable(False, False)
     window.mainloop()
