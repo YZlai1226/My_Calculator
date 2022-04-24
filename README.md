@@ -1,4 +1,8 @@
-## TODO LATER
+## myCalculator
+
+This is a Coding Academy project.
+
+Passes PEP8 coding style.
 
 ### Installation
 To install the necessary libraries, please run the following command:
