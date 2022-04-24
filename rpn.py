@@ -26,11 +26,12 @@ class Rpn:
         return self.result_text
 
     def input_key(self, value: str) -> None:
-        print(f'self result is {self.result}')
         if (self.result != 0) and (self.is_operand(value)):
             self.click_history += str(self.result)
             self.result = 0
-            print(f'==== click history is {self.click_history}')
+        if self.result != 0 and \
+                value not in ['*', '/', '+', '^', '(', ')', '.']:
+            return
         if len(self.click_history) == 0 and \
                 value in ['*', '/', '+', '^', '(', ')', '.']:
             return
@@ -44,9 +45,7 @@ class Rpn:
                 self.is_operand(self.click_history[-1]) and \
                 self.is_operand(value):
             self.click_history = self.click_history[:-1]
-        print('finish if')
         self.click_history += value
-        print(f'+++++ click history is {self.click_history}')
         self.cal_input_text.set(self.click_history)
 
     def get_priority(self, operand: str) -> int:
@@ -60,7 +59,6 @@ class Rpn:
     This function works by taking ...
     """
     def postfix_conversion(self, expression: str) -> None:
-        print(f'the input is {expression}')
         if len(expression) != 0:
             expression_start = 0
             if expression[0] in ['+', '-']:
@@ -73,7 +71,6 @@ class Rpn:
             if expression[0] in ['+', '-']:
                 self.my_expression_list[0] = expression[0] \
                     + self.my_expression_list[0]
-            print(f'my expression is {self.my_expression_list}')
             # for expression in self.my_expression_list:
             #     print(f'=> {expression}')
             for element in self.my_expression_list:
@@ -95,11 +92,8 @@ class Rpn:
                 else:
                     self.my_operands_list.append(element)
             self.my_postfix_list.append(self.my_operands_list.pop())
-            print(f'my postfix list is {self.my_postfix_list}')
-            print(f'my operands list is {self.my_operands_list}')
             if len(self.my_operands_list) != 0:
                 self.my_postfix_list.append(self.my_operands_list[-1])
-            print(f'here is my final postfix : {self.my_postfix_list}')
 
     def is_operand(self, character: str) -> bool:
         return character in self.operands
@@ -122,18 +116,12 @@ class Rpn:
 
     # second big function to get fiinal answer
     def postfix_evaluation(self, postfix: list) -> None:
-        # print(f' in final evaluation function {postfix}')
-        # for element in postfix:
-        #     if self.is_operand(element):
-        #         index = postfix.index(element)
-        #         print(f'index is {index}')
         while len(postfix) > 1:
             postfix = self.run_whole_list(postfix)
         postfix[0] = float(postfix[0])
         self.result = self.answer
         if (postfix[0]).is_integer():
             self.result = int(postfix[0])
-        print(self.result)
         self.click_history = ""
         self.cal_input_text.set(self.click_history)
         self.result_text.set(self.result)
@@ -141,7 +129,6 @@ class Rpn:
         self.my_operands_list = []
         self.my_postfix_list = []
         self.click_history = ""
-        print(f'result text is {self.result_text}')
 
     # returns True if the next 3 characters are an expression
     def is_expression(self, partial_list: list) -> bool:
@@ -165,21 +152,15 @@ class Rpn:
             self.answer = float(number1) ** float(number2)
 
     def run_whole_list(self, postfix: list) -> list:
-        # for i, elem in enumerate(postfix):
         i = 0
         while i < len(postfix):
-            # print(f'i is {i} and elem is {postfix[i]}')
             if i <= (len(postfix) - 3) and self.is_expression(postfix[i:i+3]):
-                # print(f'length is {len(postfix) - 3}')
-                # print(f'i is {i}')
                 number1 = postfix[i]
                 number2 = postfix[i + 1]
                 operand = postfix[i + 2]
                 self.calculate(number1, number2, operand)
                 del postfix[i:i+3]
-                # print(f'after deleting the list is {postfix}')
                 postfix.insert(i, str(self.answer))
-                print(f'after inserting the list is {postfix}')
                 i -= 1
             i += 1
         return postfix
@@ -199,10 +180,8 @@ class Rpn:
 
     def conversion_and_evaluation(self, input_string: str,
                                   postfix_list: list) -> None:
-        print(f'input string is {input_string}')
         input_string_list = [input_string[i:i+1]
                              for i in range(0, len(input_string), 1)]
-        print(f'input string  list is {input_string_list}')
         if (len(input_string_list) >= 3):
             self.postfix_conversion(input_string)
             self.postfix_evaluation(postfix_list)
